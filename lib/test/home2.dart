@@ -1,24 +1,18 @@
-
-
+import 'package:blood_donation_app/services/firebase-services.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage2 extends StatefulWidget {
+  const HomePage2({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage2> createState() => _HomePage2State();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePage2State extends State<HomePage2> {
+FirebaseServices firebaseServices=FirebaseServices();
   CollectionReference donor = FirebaseFirestore.instance.collection("donor");
 
-
-void deleteDonor(docId){
-donor.doc(docId).delete();
-
-}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,23 +41,24 @@ donor.doc(docId).delete();
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder(
-          stream: donor.snapshots(),
-          builder: (context, AsyncSnapshot snapshot) {
+        child: StreamBuilder<QuerySnapshot>(
+          stream: donor.orderBy("name").snapshots(),
+          builder: (context,  snapshot) {
             if (snapshot.hasData) {
+              final d=snapshot.data!.docs;
               return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
+                itemCount: d.length,
                 itemBuilder: (context, index) {
-                  final DocumentSnapshot donorSnp = snapshot.data.docs[index];
+                 //final DocumentSnapshot donorSnp = snapshot.data.docs[index];
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(color: Colors.grey.withOpacity(0.5),blurRadius: 10,spreadRadius: 15)
-                        ]
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(color: Colors.grey.withOpacity(0.5),blurRadius: 10,spreadRadius: 15)
+                          ]
                       ),
                       height: 80,
                       child: Row(
@@ -77,7 +72,7 @@ donor.doc(docId).delete();
                                 backgroundColor: Colors.brown,
                                 radius: 32,
                                 child: Text(
-                                  donorSnp["group"],
+                                  d[index]["group"],
                                   style: TextStyle(
                                       fontSize: 20, color: Colors.white),
                                 ),
@@ -88,14 +83,14 @@ donor.doc(docId).delete();
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                donorSnp["name"],
+                                d[index]["name"],
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green),
                               ),
                               Text(
-                                donorSnp["phone"].toString(),
+                                d[index]["phone"].toString(),
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500, fontSize: 15,color: Colors.redAccent),
                               )
@@ -107,12 +102,11 @@ donor.doc(docId).delete();
                                 onPressed: () {
                                   Navigator.pushNamed(context, "/update",
                                   arguments: {
-                                    "name":donorSnp["name"],
-                                    "phone":donorSnp["phone"].toString(),
-                                    "group":donorSnp["group"],
-                                    "id":donorSnp.id
+                                    "name":d[index]["name"],
+                                    "phone":d[index]["phone"].toString(),
+                                    "group":d[index]["group"],
+                                    "id":d[index].id
                                   }
-
                                   );
 
                                 },
@@ -122,7 +116,8 @@ donor.doc(docId).delete();
                               ),
                               IconButton(
                                 onPressed: () {
-                                  deleteDonor(donorSnp.id);
+                                  firebaseServices.deleteDonor(d[index].id);
+
                                 },
                                 icon: Icon(Icons.delete),
                                 iconSize: 30,
@@ -137,7 +132,11 @@ donor.doc(docId).delete();
                 },
               );
             }
-            return Container();
+            else{
+             return Center(
+               child: CircularProgressIndicator(),
+             );
+            }
           },
         ),
       ),

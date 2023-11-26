@@ -1,3 +1,4 @@
+import 'package:blood_donation_app/services/firebase-services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ class HomePage1 extends StatefulWidget {
 }
 
 class _HomePage1State extends State<HomePage1> {
+  FirebaseServices firebaseServices=FirebaseServices();
   Future getData()async{
     try{
       // var data;
@@ -32,18 +34,6 @@ class _HomePage1State extends State<HomePage1> {
       print("error=====${e}");
     }
   }
-
-  void deleteDonor(docId){
-    try{
-        CollectionReference donor = FirebaseFirestore.instance.collection("donor");
-        donor.doc(docId).delete();
-    }
-        catch(e){
-        print("error/////////////////////////${e}");}
-
-
-  }
-
 @override
   void initState() {
     getData();
@@ -153,7 +143,7 @@ class _HomePage1State extends State<HomePage1> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                   deleteDonor(d1.id);
+                                  firebaseServices.deleteDonor(d1.id);
 
 
                                 },

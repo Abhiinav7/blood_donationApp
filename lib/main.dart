@@ -1,14 +1,10 @@
-import 'package:blood_donation_app/add.dart';
-import 'package:blood_donation_app/hom1.dart';
-import 'package:blood_donation_app/home2.dart';
-import 'package:blood_donation_app/update.dart';
+import 'package:blood_donation_app/screens/add_donor_screen.dart';
+import 'package:blood_donation_app/screens/update_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:blood_donation_app/home.dart';
+import 'package:blood_donation_app/screens/main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'home.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +24,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-
       ),
       routes: {
     "/":(context)=>HomePage(),

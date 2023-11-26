@@ -1,31 +1,16 @@
+import 'package:blood_donation_app/services/firebase-services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class AddDonor extends StatefulWidget {
-  const AddDonor({super.key});
+class UpdateDonor extends StatefulWidget {
+  const UpdateDonor({super.key});
 
   @override
-  State<AddDonor> createState() => _AddDonorState();
+  State<UpdateDonor> createState() => _UpdateDonorState();
 }
 
-class _AddDonorState extends State<AddDonor> {
-  final CollectionReference donor =
-      FirebaseFirestore.instance.collection("donor");
-
-  void addDOnor() {
-    try{
-      final data = {
-        "name": donorName.text,
-        "phone": donorPhone.text,
-        "group": selectedGroups
-      };
-      donor.add(data);
-    }
-   catch(e){
-      print(e);
-   }
-
-  }
+class _UpdateDonorState extends State<UpdateDonor> {
+  FirebaseServices firebaseServices = FirebaseServices();
 
   TextEditingController donorName = TextEditingController();
   TextEditingController donorPhone = TextEditingController();
@@ -35,6 +20,12 @@ class _AddDonorState extends State<AddDonor> {
 
   @override
   Widget build(BuildContext context) {
+    final arg = ModalRoute.of(context)!.settings.arguments as Map;
+    donorName.text = arg["name"];
+    donorPhone.text = arg["phone"];
+    selectedGroups = arg["group"];
+    final docId = arg["id"];
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -46,7 +37,7 @@ class _AddDonorState extends State<AddDonor> {
               size: 29,
               color: Colors.white,
             )),
-        title: Text("Add Users"),
+        title: Text("Update Users"),
         titleTextStyle: TextStyle(
             fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
         centerTitle: true,
@@ -81,6 +72,7 @@ class _AddDonorState extends State<AddDonor> {
                   hintText: "PhoneNumber"),
             ),
             DropdownButtonFormField(
+                value: selectedGroups,
                 decoration: InputDecoration(label: Text("Select Blood group")),
                 items: bld
                     .map((e) => DropdownMenuItem(
@@ -96,18 +88,15 @@ class _AddDonorState extends State<AddDonor> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  addDOnor();
-                  Navigator.pop(context);
-                  // setState(() {
-                  //
-                  // });
+                  firebaseServices.updateDonor(docId, donorName.text,
+                      donorPhone.text, selectedGroups!, context);
                 },
                 style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(Colors.pink),
                     minimumSize:
                         MaterialStatePropertyAll(Size(double.infinity, 45))),
                 child: Text(
-                  "Submit",
+                  "Update",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ))
           ],
